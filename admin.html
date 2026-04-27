@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Linea Chiara Infissi</title>
+
+    <!-- Original Meta & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Lato:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Admin Overlay Core */
+        :root {
+            --admin-h: 60px;
+        }
+
+        body {
+            padding-top: var(--admin-h) !important;
+            background: #f0f2f5;
+        }
+
+        .admin-toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--admin-h);
+            background: #1a1a1a;
+            color: white;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 576px) {
+            :root {
+                --admin-h: 50px;
+            }
+
+            .admin-toolbar {
+                padding: 0 10px;
+            }
+
+            .admin-logo-text {
+                font-size: 14px;
+                margin-right: 10px !important;
+            }
+
+            .admin-toolbar .btn span {
+                display: none;
+            }
+
+            /* Hide button text on mobile */
+            .admin-toolbar .btn i {
+                margin: 0 !important;
+                font-size: 1.1rem;
+            }
+
+            .admin-toolbar .btn {
+                padding: 5px 10px;
+            }
+        }
+
+        .admin-logo-text {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        /* Editing State Highlights */
+        .is-editing [contenteditable="true"] {
+            outline: 2px dashed var(--primary-color) !important;
+            outline-offset: 4px;
+            transition: background 0.2s;
+        }
+
+        .is-editing [contenteditable="true"]:hover {
+            background: rgba(0, 91, 113, 0.08);
+        }
+
+        /* Image Overlays */
+        .img-editor-wrap {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .img-editor-tools {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: none;
+            gap: 8px;
+        }
+
+        .is-editing .img-editor-wrap:hover .img-editor-tools {
+            display: flex;
+        }
+
+        /* Background Image Editor */
+        .bg-editor-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .is-editing .hero-bg:hover .bg-editor-btn,
+        .is-editing .hero-item:hover .bg-editor-btn {
+            display: block;
+        }
+
+        /* Grid Add Buttons */
+        .admin-add-btn {
+            border: 2px dashed #ddd;
+            background: #fff;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            color: #888;
+            font-family: 'Oswald', sans-serif;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .admin-add-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: #f8f9fa;
+            transform: translateY(-3px);
+        }
+
+        /* Delete Control */
+        .card-remover {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            background: #ff4757;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .card-remover:hover {
+            transform: scale(1.1);
+        }
+
+        .is-editing .product-card:hover .card-remover,
+        .is-editing .service-item:hover .card-remover,
+        .is-editing .badge-card:hover .card-remover {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+
+            .is-editing .product-card .card-remover,
+            .is-editing .service-item .card-remover,
+            .is-editing .badge-card .card-remover {
+                display: flex;
+            }
+        }
+
+        /* Header Correction */
+        .main-header {
+            top: var(--admin-h) !important;
+        }
+
+        /* Sidebar for sections */
+        .section-sidebar {
+            position: fixed;
+            right: -350px;
+            top: var(--admin-h);
+            width: 320px;
+            height: calc(100vh - var(--admin-h));
+            background: white;
+            z-index: 9999;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .section-sidebar.open {
+            right: 0;
+        }
+
+        #save-status {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20000;
+            display: none;
+        }
+
+        /* Fix modal z-index to show above admin toolbar */
+        .modal {
+            z-index: 10005 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 10004 !important;
+        }
+    </style>
+</head>
+
+<body class="is-editing">
+
+    <!-- Admin Toolbar -->
+    <div class="admin-toolbar">
+        <div class="d-flex align-items-center">
+            <span class="admin-logo-text h4 mb-0 me-4">ADMIN</span>
+            <button class="btn btn-sm btn-info fw-bold me-2 px-3" onclick="toggleEditMode()" id="modeBtn">
+                <i class="fas fa-eye me-2"></i> <span>ANTEPRIMA</span>
+            </button>
+            <button class="btn btn-sm btn-outline-light me-2" onclick="toggleSidebar()">
+                <i class="fas fa-plus-circle me-2"></i> <span>AGGIUNGI</span>
+            </button>
+        </div>
+        <div class="d-flex align-items-center">
+            <button class="btn btn-sm btn-success fw-bold me-2 px-3" onclick="saveAll()">
+                <i class="fas fa-save me-2"></i> <span>SALVA</span>
+            </button>
+            <button class="btn btn-sm btn-outline-info me-2" onclick="openSettings()" title="Impostazioni">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-warning me-2" onclick="resetToDefault()" title="Ripristina Originale">
+                <i class="fas fa-undo"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="logout()" title="Esci">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Section Sidebar -->
+    <div class="section-sidebar" id="sidebar">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <h5 class="fw-bold mb-0">Libreria</h5>
+            <button class="btn-close" onclick="toggleSidebar()"></button>
+        </div>
+        <div class="list-group list-group-flush">
+            <button class="list-group-item list-group-item-action py-3" onclick="injectSection('hero')">
+                <i class="fas fa-image me-3 text-primary"></i> <strong>Slider Hero</strong>
+            </button>
+            <button class="list-group-item list-group-item-action py-3" onclick="injectSection('text')">
+                <i class="fas fa-align-center me-3 text-primary"></i> <strong>Sezione Testo</strong>
+            </button>
+            <button class="list-group-item list-group-item-action py-3" onclick="injectSection('grid')">
+                <i class="fas fa-th me-3 text-primary"></i> <strong>Griglia Servizi</strong>
+            </button>
+        </div>
+    </div>
+
+    <!-- Website Root (Exact Replica) -->
+    <div id="editable-root">
+        <!-- Main Header -->
+        <header class="main-header fixed-top">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 border-bottom">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center" href="#home">
+                        <span class="fw-bold h4 mb-0 text-primary">LINEA CHIARA INFISSI</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav mx-auto text-uppercase small fw-bold">
+                            <li class="nav-item"><a class="nav-link px-3" href="#home">Home</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#chisiamo">Chi siamo</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#prodotti">Prodotti</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#servizi">Servizi</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#preventivi">Contatti</a></li>
+                        </ul>
+                        <div class="nav-cta">
+                            <a href="#preventivi" class="btn btn-primary rounded-0 px-4">PREVENTIVO</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Top Bar -->
+            <div class="top-bar py-2 d-none d-lg-block border-bottom bg-light">
+                <div class="container d-flex justify-content-between align-items-center">
+                    <div class="contact-info small">
+                        <span class="me-4 text-secondary">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            Via Garlasco, 5, 27020 Tromello (PV)
+                        </span>
+                        <span class="text-secondary">
+                            <i class="fas fa-phone-alt text-primary me-2"></i>
+                            +39 320 158 1689
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+                <!-- Custom Indicators -->
+                <div class="carousel-custom-controls">
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" class="control-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="carousel-indicators-custom">
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0"
+                            class="active"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+                    </div>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide="next" class="control-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="hero-bg"
+                            style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&q=80&w=1920');">
+                        </div>
+                        <div class="carousel-caption text-center">
+                            <div class="container">
+                                <h1 class="display-3 fw-bold mb-3" data-aos="fade-up">Serramenti con certificazione</h1>
+                                <p class="h5 fw-normal mb-5" data-aos="fade-up" data-aos-delay="200">Vogliamo rendere la
+                                    tua casa più sicura, confortevole ed esteticamente bella.</p>
+                                <div data-aos="zoom-in" data-aos-delay="400">
+                                    <a href="#preventivi"
+                                        class="btn btn-primary btn-lg px-5 py-3 rounded-0 fw-bold text-uppercase">Preventivo
+                                        gratuito</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="hero-bg"
+                            style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/heroImages/hero2.png');">
+                        </div>
+                        <div class="carousel-caption text-center">
+                            <div class="container">
+                                <h1 class="display-3 fw-bold mb-3">Infissi in PVC e Legno</h1>
+                                <p class="h5 fw-normal mb-5">Materiali di prima scelta per un isolamento termico e
+                                    acustico perfetto.</p>
+                                <div>
+                                    <a href="#preventivi"
+                                        class="btn btn-primary btn-lg px-5 py-3 rounded-0 fw-bold text-uppercase">Preventivo
+                                        gratuito</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="hero-bg"
+                            style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/heroImages/hero3.png');">
+                        </div>
+                        <div class="carousel-caption text-center">
+                            <div class="container">
+                                <h1 class="display-3 fw-bold mb-3">Produzione e Posa</h1>
+                                <p class="h5 fw-normal mb-5">Un servizio completo, dalla fabbrica a casa tua, con
+                                    assistenza garantita.</p>
+                                <div>
+                                    <a href="#preventivi"
+                                        class="btn btn-primary btn-lg px-5 py-3 rounded-0 fw-bold text-uppercase">Preventivo
+                                        gratuito</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Badges -->
+        <section class="py-5 bg-white border-bottom">
+            <div class="container">
+                <div class="row g-4 text-center">
+                    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="badge-card">
+                            <div class="badge-number">01</div>
+                            <div class="icon-box mb-3"><i class="fas fa-industry"></i></div>
+                            <h6 class="fw-bold">Produzione Propria</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="badge-card">
+                            <div class="badge-number">02</div>
+                            <div class="icon-box mb-3"><i class="fas fa-check-double"></i></div>
+                            <h6 class="fw-bold">Posa Certificata</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
+                        <div class="badge-card">
+                            <div class="badge-number">03</div>
+                            <div class="icon-box mb-3"><i class="fas fa-tools"></i></div>
+                            <h6 class="fw-bold">Riparazione Rapida</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
+                        <div class="badge-card">
+                            <div class="badge-number">04</div>
+                            <div class="icon-box mb-3"><i class="fas fa-headset"></i></div>
+                            <h6 class="fw-bold">Assistenza Clienti</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chi Siamo Section -->
+        <section id="chisiamo" class="py-5 bg-white">
+            <div class="container py-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-5" data-aos="fade-right">
+                        <img src="img/who-we-are.png"
+                            alt="Chi Siamo" class="img-fluid shadow-sm">
+                    </div>
+                    <div class="col-lg-7" data-aos="fade-left">
+                        <h2 class="section-title-left fw-bold mb-4">Chi siamo</h2>
+                        <p class="text-muted mb-4">
+                            Mi chiamo Mohamed e da anni mi occupo di serramenti PVC e legno, posa di porte blindate e
+                            interne, riparazione di zanzariere e persiane, tapparelle normali ed elettriche, tende da
+                            sole e inferriate in ferro. Il mio obiettivo è rendere la tua casa più sicura, confortevole
+                            ed esteticamente bella — con un servizio puntuale e prezzi onesti.
+                        </p>
+                        <div class="row g-4 mb-4">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-users fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h4 class="fw-bold mb-0 counter" data-target="10">0</h4>
+                                        <p class="small text-muted mb-0">Anni di Esperienza</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-smile fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h4 class="fw-bold mb-0 counter" data-target="500">0</h4>
+                                        <p class="small text-muted mb-0">Clienti soddisfatti</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#preventivi" class="btn btn-primary rounded-0 px-5">MAGGIORI INFORMAZIONI</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prodotti Section -->
+        <section id="prodotti" class="py-5 bg-light">
+            <div class="container py-5 text-center">
+                <h2 class="section-title-centered fw-bold mb-5">I Nostri Prodotti</h2>
+
+                <div class="row g-4 text-start" id="prod-grid">
+                    <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="product-card">
+                            <img src="img/lockerImage.jpeg"
+                                alt="Serramenti" class="img-fluid w-100">
+                            <div class="product-info">
+                                <h5 class="fw-bold">Serramenti</h5>
+                                <p class="mb-0">Finestre, Porte Balcone e Portoncini</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="product-card">
+                            <img src="img/slider.jpeg"
+                                alt="Scorrevoli" class="img-fluid w-100">
+                            <div class="product-info">
+                                <h5 class="fw-bold">Scorrevoli</h5>
+                                <p class="mb-0">Scorrevoli e Traslanti</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="product-card">
+                            <img src="img/rollup.webp"
+                                alt="Avvolgibili" class="img-fluid w-100">
+                            <div class="product-info">
+                                <h5 class="fw-bold">Avvolgibili - Cassonetti</h5>
+                                <p class="mb-0">Avvolgibili e Cassonetti coibentati</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="product-card">
+                            <img src="img/nets.jpg"
+                                alt="Zanzariere" class="img-fluid w-100">
+                            <div class="product-info">
+                                <h5 class="fw-bold">Zanzariere</h5>
+                                <p class="mb-0">Zanzariere di qualità per ogni tipo di infisso</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="product-card">
+                            <img src="img/Sistemi oscuranti.jpeg"
+                                alt="Sistemi oscuranti" class="img-fluid w-100">
+                            <div class="product-info">
+                                <h5 class="fw-bold">Sistemi oscuranti</h5>
+                                <p class="mb-0">Persiane e Antoni a battente o scorrevoli in alluminio</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="product-card">
+                            <img src="img/door.jpeg"
+                                alt="Porte" class="img-fluid w-100">
+                            <div class="product-info">
+                                <h5 class="fw-bold">Porte interne - Blindate</h5>
+                                <p class="mb-0">Porte interne e Blindate di tendenza e qualità</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-add-btn" onclick="addCard('prod')"><i class="fas fa-plus me-2"></i> AGGIUNGI NUOVO
+                        PRODOTTO</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Servizi Section -->
+        <section id="servizi" class="py-5 bg-white">
+            <div class="container py-5 text-center">
+                <h2 class="section-title-centered fw-bold mb-5">I nostri servizi</h2>
+                <div class="row g-4 text-start" id="serv-grid">
+                    <div class="col-sm-6 col-md-4" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="product-card">
+                            <img src="img/inspection.jpg"
+                                alt="Sopralluogo" class="img-fluid w-100">
+                            <div class="product-info text-center">
+                                <h5 class="fw-bold">Sopralluogo Gratuito</h5>
+                                <p class="mb-0">Effettuiamo sopralluoghi e preventivi gratuiti. Forniamo ai nostri Cliente tutta la nostra esperienza per trovare la giusta soluzione.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="zoom-in" data-aos-delay="200">
+                        <div class="product-card">
+                            <img src="img/installation.png"
+                                alt="Posa" class="img-fluid w-100">
+                            <div class="product-info text-center">
+                                <h5 class="fw-bold">Posa serramenti</h5>
+                                <p class="mb-0">Posa serramenti di ogni tipo: avvolgibili anche motorizzati, persiane ed antoni storici, porte interne, zanzariere, porte blindate.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4" data-aos="zoom-in" data-aos-delay="300">
+                        <div class="product-card">
+                            <img src="img/transport.png"
+                                alt="Trasporto" class="img-fluid w-100">
+                            <div class="product-info text-center">
+                                <h5 class="fw-bold">Trasporto e Consegna</h5>
+                                <p class="mb-0">Forniamo e consegnamo in tutto il nord Italia. Tempi di consegna rapidi e garantiti.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-add-btn" onclick="addCard('serv')"><i class="fas fa-plus me-2"></i> AGGIUNGI NUOVO
+                        SERVIZIO</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-5 bg-light">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-right">
+                        <h2 class="section-title-left fw-bold mb-4">Domande Frequenti</h2>
+                        <p class="text-muted">Abbiamo raccolto le risposte alle domande più comuni per aiutarti a capire meglio i nostri servizi e le soluzioni per i tuoi serramenti.</p>
+                        <div class="mt-4">
+                            <img src="img/faq-illustration.png" alt="FAQ" class="img-fluid rounded shadow-sm d-none d-lg-block" style="max-height: 300px;">
+                        </div>
+                    </div>
+                    <div class="col-lg-7" data-aos="fade-left">
+                        <div class="accordion accordion-flush" id="faqAccordion">
+                            <div class="accordion-item border-0 mb-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        Fate preventivi gratuiti per infissi a Pavia?
+                                    </button>
+                                </h3>
+                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-muted">
+                                        Sì! Offriamo sopralluogo e preventivo gratuito senza impegno a <strong>Tromello, Pavia</strong> e in tutta la provincia di Pavia. Contattaci al <strong>320 1581689</strong>.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item border-0 mb-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        Quali materiali di serramenti installate?
+                                    </button>
+                                </h3>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-muted">
+                                        Installiamo serramenti in <strong>PVC e legno</strong>, porte blindate certificate, tapparelle manuali ed elettriche, zanzariere a rullo, tende da sole e inferriate in ferro.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item border-0 mb-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        Fornite le certificazioni per le detrazioni fiscali?
+                                    </button>
+                                </h3>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-muted">
+                                        Sì. A fine lavori rilasciamo <strong>DoP, marcatura CE, certificato di Trasmittanza e CAM</strong> per accedere alle agevolazioni fiscali (bonus infissi).
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item border-0 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                        In quali zone operate?
+                                    </button>
+                                </h3>
+                                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-muted">
+                                        Operiamo principalmente a <strong>Tromello, Pavia</strong> e in tutta la <strong>provincia di Pavia (PV)</strong>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-add-btn mt-4" onclick="addFAQ()"><i class="fas fa-plus me-2"></i> AGGIUNGI NUOVA DOMANDA</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certificazioni Section -->
+        <section class="py-5 bg-light info-section">
+            <div class="container py-5">
+                <div class="row align-items-stretch g-0 shadow-sm border">
+                    <div class="col-lg-7 p-4 p-lg-5 bg-light d-flex flex-column justify-content-center">
+                        <h2 class="section-title-left fw-bold mb-4">Certificazioni</h2>
+                        <p class="text-muted small mb-5">
+                            Forniamo a fine posa le certificazioni necessarie per ottenere le agevolazioni fiscali, ad
+                            esempio: la Dichiarazione di Prestazione (DoP) e marcatura CE, certificato di Trasmittanza
+                            ed anche la Certificazione ambientale del prodotto (Cam).
+                        </p>
+
+                        <div class="row g-4">
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="cert-icon-box me-3"><i class="fas fa-check"></i></div>
+                                    <div class="cert-text">
+                                        <div class="fw-bold text-primary small">Qualità</div>
+                                        <div class="text-muted small">Servizio</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="cert-icon-box me-3"><i class="fas fa-user-check"></i></div>
+                                    <div class="cert-text">
+                                        <div class="fw-bold text-primary small">Creatività</div>
+                                        <div class="text-muted small">Designers</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="cert-icon-box me-3"><i class="fas fa-drafting-compass"></i></div>
+                                    <div class="cert-text">
+                                        <div class="fw-bold text-primary small">Analisi</div>
+                                        <div class="text-muted small">Gratuita</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="cert-icon-box me-3"><i class="fas fa-headset"></i></div>
+                                    <div class="cert-text">
+                                        <div class="fw-bold text-primary small">Supporto</div>
+                                        <div class="text-muted small">Clienti</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5" data-aos="zoom-in">
+                        <img src="img/iso-cert.png" alt="Certificazioni Quality"
+                            class="img-fluid w-100 h-100 object-fit-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sostenibilità Section -->
+        <!-- Sostenibilità Section -->
+        <section class="py-5 bg-white info-section">
+            <div class="container py-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6 p-4 p-lg-0">
+                        <h2 class="section-title-left fw-bold mb-4">Sostenibilità</h2>
+                        <p class="text-muted mb-5">
+                            L’approccio olistico alla sostenibilità considera l’economia circolare a circuito chiuso il
+                            mezzo per contribuire concretamente ad un futuro migliore. Per questo motivo l’azienda
+                            propone finestre sostenibili, realizzate con quote importanti di materiale riciclato.
+                        </p>
+
+                        <div class="row g-4">
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="img/icon_riciclo.jpg" alt="Icon" class="rounded me-3 shadow-sm"
+                                        style="width: 70px; height: 70px; object-fit: cover;">
+                                    <span class="text-primary fw-bold">Riciclo</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="img/icon_risparmio.jpg" alt="Icon" class="rounded me-3 shadow-sm"
+                                        style="width: 70px; height: 70px; object-fit: cover;">
+                                    <span class="text-primary fw-bold">Risparmio energetico</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="img/icon_sostenibile.jpg" alt="Icon" class="rounded me-3 shadow-sm"
+                                        style="width: 70px; height: 70px; object-fit: cover;">
+                                    <span class="text-primary fw-bold">Sostenibile</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="img/icon_ecologico.jpg" alt="Icon" class="rounded me-3 shadow-sm"
+                                        style="width: 70px; height: 70px; object-fit: cover;">
+                                    <span class="text-primary fw-bold">Ecologico</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" data-aos="fade-left">
+                        <img src="img/sostenibilita_main.jpg" alt="Sostenibilità"
+                            class="img-fluid w-100 shadow-sm rounded">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dove Siamo Section -->
+        <section class="py-5 bg-light">
+            <div class="container py-5 text-center">
+                <h2 class="section-title-centered fw-bold mb-5">Dove siamo</h2>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <p class="h5 mb-4"><i class="fas fa-map-marker-alt text-primary me-2"></i> Via Garlasco 5, 27020
+                            Tromello (PV)</p>
+                        <p class="text-muted">Disponibili per sopralluoghi e preventivi gratuiti a Tromello, Pavia e in
+                            tutta la provincia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section id="preventivi" class="py-5 bg-white form-section">
+            <div class="container py-5">
+                <div class="row g-0 shadow-sm border">
+                    <div class="col-lg-6 p-4 p-md-5 bg-white">
+                        <h3 class="fw-bold mb-4">Richiedi il tuo preventivo</h3>
+                        <p class="small text-muted mb-4">Compila il modulo per ricevere una quotazione personalizzata.
+                        </p>
+                        <form action="https://formspree.io/f/mohamedonly112@gmail.com" method="POST">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <input type="text" name="name" class="form-control" placeholder="Nome" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="tel" name="phone" class="form-control" placeholder="Telefono" required>
+                                </div>
+                                <div class="col-12">
+                                    <input type="email" name="email" class="form-control" placeholder="E-mail" required>
+                                </div>
+                                <div class="col-12">
+                                    <textarea name="message" rows="4" class="form-control" placeholder="Messaggio"
+                                        required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary rounded-0 px-5 py-3 w-100">INVIA
+                                        RICHIESTA</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-lg-6">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2807.1342!2d8.8770241!3d45.2089617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47871c574e64fdff%3A0x73d45410a722a4be!2sVia%20Garlasco%2C%205%2C%2027020%20Tromello%20PV!5e0!3m2!1sit!2sit!4v1713810587784!5m2!1sit!2sit"
+                            width="100%" height="100%" style="border:0; min-height: 400px;" allowfullscreen=""
+                            loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="pt-5">
+            <div class="container text-center pb-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <h6 class="text-uppercase fw-bold mb-4">Contatti</h6>
+                        <div class="mb-3 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-map-marker-alt me-3"></i>
+                            <span>Via Garlasco 5, Tromello (PV)</span>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-phone-alt me-3"></i>
+                            <a href="tel:+393201581689" class="text-white text-decoration-none">+39 320 1581689</a>
+                        </div>
+                        <div class="mb-4 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-envelope me-3"></i>
+                            <span>mohamedonly112@gmail.com</span>
+                        </div>
+                        <div class="footer-social">
+                            <a href="https://wa.me/393201581689" class="social-icon-box" target="_blank"><i
+                                    class="fab fa-whatsapp"></i></a>
+                            <a href="#" class="social-icon-box"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon-box"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="social-icon-box"><i class="fab fa-pinterest-p"></i></a>
+                            <a href="#" class="social-icon-box"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center text-md-start">
+                            <p class="mb-0 small">Linea Chiara Infissi di Mohamed, All Right Reserved. <a
+                                    href="login.html" class="text-muted ms-3"
+                                    style="text-decoration: none; font-size: 0.7rem;"><i class="fas fa-lock"></i>
+                                    Admin</a></p>
+                        </div>
+                        <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                            <a href="#" class="back-to-top d-inline-flex ms-auto">
+                                <i class="fas fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- WhatsApp Floating Button -->
+        <a href="https://wa.me/393201581689" class="whatsapp-float shadow" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+
+
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Impostazioni Account</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="nu" class="form-control mb-2" placeholder="Nuovo Nome Utente">
+                    <div class="input-group">
+                        <input type="password" id="np" class="form-control" placeholder="Nuova Password">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility()"
+                            id="togglePasswordBtn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-primary w-100" onclick="updateAcc()">Aggiorna</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="save-status" class="alert alert-success shadow">Tutte le modifiche sono state salvate!</div>
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auth check
+        if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
+
+        let editing = true;
+
+        function toggleEditMode() {
+            editing = !editing;
+            document.body.classList.toggle('is-editing', editing);
+            const btn = document.getElementById('modeBtn');
+            btn.innerHTML = editing ? '<i class="fas fa-eye me-2"></i> ANTEPRIMA' : '<i class="fas fa-edit me-2"></i> MODALITÀ MODIFICA';
+            btn.classList.toggle('btn-info', editing);
+            btn.classList.toggle('btn-warning', !editing);
+            initEditor();
+        }
+
+        function initEditor() {
+            const root = document.getElementById('editable-root');
+
+            // 1. Text Editable
+            const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+            let n;
+            while (n = walk.nextNode()) {
+                if (n.textContent.trim().length > 0) {
+                    const parent = n.parentElement;
+                    if (parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE' && (parent.tagName !== 'BUTTON' || parent.classList.contains('accordion-button')) && !parent.classList.contains('card-remover')) {
+                        parent.contentEditable = editing ? "true" : "false";
+                    }
+                }
+            }
+
+            // 2. Image Wrapper
+            root.querySelectorAll('img').forEach(img => {
+                if (!img.parentElement.classList.contains('img-editor-wrap')) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'img-editor-wrap';
+                    img.parentNode.insertBefore(wrap, img);
+                    wrap.appendChild(img);
+
+                    const tools = document.createElement('div');
+                    tools.className = 'img-editor-tools';
+                    tools.innerHTML = `
+                        <button class="btn btn-xs btn-info text-white" onclick="changeImageURL(this)" title="URL"><i class="fas fa-link"></i></button>
+                        <button class="btn btn-xs btn-primary" onclick="uploadImage(this)" title="Carica"><i class="fas fa-upload"></i></button>
+                        <button class="btn btn-xs btn-danger" onclick="removeImage(this)" title="Elimina"><i class="fas fa-trash"></i></button>
+                    `;
+                    wrap.appendChild(tools);
+                }
+            });
+
+            // 3. Background Images
+            root.querySelectorAll('.hero-bg, .hero-item').forEach(el => {
+                if (!el.querySelector('.bg-editor-btn')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'bg-editor-btn';
+                    btn.innerHTML = '<i class="fas fa-link me-1"></i> URL | <i class="fas fa-upload me-1"></i> Carica';
+                    btn.onclick = () => {
+                        const opt = prompt("Premi '1' per inserire un URL, o '2' per caricare un file:", "1");
+                        if (opt === '1') {
+                            const url = prompt("Inserisci il nuovo URL dell'immagine di sfondo:");
+                            if (url) el.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${url}')`;
+                        } else if (opt === '2') {
+                            triggerUpload((base64) => {
+                                el.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${base64}')`;
+                            });
+                        }
+                    };
+                    el.style.position = 'relative';
+                    el.appendChild(btn);
+                }
+            });
+
+            // 4. Card Removers
+            root.querySelectorAll('.product-card, .service-item, .badge-card, .accordion-item').forEach(el => {
+                if (!el.querySelector('.card-remover')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'card-remover';
+                    btn.innerHTML = '<i class="fas fa-times"></i>';
+                    btn.onclick = function () {
+                        if (confirm("Eliminare l'intera scheda?")) {
+                            const col = this.closest('[class*="col-"]');
+                            if (col) col.remove();
+                        }
+                    };
+                    el.classList.add('position-relative');
+                    el.appendChild(btn);
+                }
+            });
+        }
+
+        function getBase64Image(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const max_size = 1000; // max width/height to save space
+                    if (width > height && width > max_size) {
+                        height *= max_size / width;
+                        width = max_size;
+                    } else if (height > max_size) {
+                        width *= max_size / height;
+                        height = max_size;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addFAQ() {
+            const accordion = document.getElementById('faqAccordion');
+            const id = 'faq' + (accordion.querySelectorAll('.accordion-item').length + 1);
+            const item = document.createElement('div');
+            item.className = 'accordion-item border-0 mb-3 shadow-sm';
+            item.innerHTML = `
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#${id}">
+                        Nuova Domanda
+                    </button>
+                </h3>
+                <div id="${id}" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted">
+                        Inserisci qui la risposta...
+                    </div>
+                </div>
+            `;
+            accordion.appendChild(item);
+            initEditor();
+        }
+
+        function triggerUpload(callback) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (file) getBase64Image(file, callback);
+            };
+            input.click();
+        }
+
+        function changeImageURL(btn) {
+            const img = btn.closest('.img-editor-wrap').querySelector('img');
+            const url = prompt("Nuovo URL immagine:", img.src);
+            if (url) img.src = url;
+        }
+
+        function uploadImage(btn) {
+            const img = btn.closest('.img-editor-wrap').querySelector('img');
+            triggerUpload((base64) => {
+                img.src = base64;
+            });
+        }
+
+        function removeImage(btn) {
+            if (confirm("Rimuovere l'immagine?")) btn.closest('.img-editor-wrap').remove();
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        function addCard(type) {
+            const grid = document.getElementById(type === 'prod' ? 'prod-grid' : 'serv-grid');
+            const col = document.createElement('div');
+            col.className = 'col-sm-6 col-md-4';
+
+            if (type === 'prod') {
+                col.setAttribute('data-aos', 'fade-up');
+                col.innerHTML = `<div class="product-card position-relative">
+                    <img src="https://via.placeholder.com/600x400" alt="New" class="img-fluid w-100">
+                    <div class="product-info"><h5 class="fw-bold">NOME PRODOTTO</h5><p class="mb-0">Descrizione breve.</p></div>
+                </div>`;
+            } else {
+                col.setAttribute('data-aos', 'zoom-in');
+                col.innerHTML = `<div class="product-card position-relative">
+                    <img src="https://via.placeholder.com/600x400" alt="New" class="img-fluid w-100">
+                    <div class="product-info text-center"><h5 class="fw-bold">TITOLO SERVIZIO</h5><p class="mb-0">Descrizione del servizio.</p></div>
+                </div>`;
+            }
+            grid.appendChild(col);
+            initEditor();
+        }
+
+        function injectSection(type) {
+            const root = document.getElementById('editable-root');
+            const footer = root.querySelector('footer');
+            let html = '';
+            if (type === 'hero') html = `<section class="py-5 bg-dark text-white text-center"><div class="container"><h1>Nuova Sezione</h1><p>Inserisci il testo qui</p></div></section>`;
+            else if (type === 'text') html = `<section class="py-5 bg-white"><div class="container text-center"><h2>Titolo Sezione</h2><p>Contenuto della sezione testo...</p></div></section>`;
+            else if (type === 'grid') html = `<section class="py-5 bg-light"><div class="container"><div class="row"><div class="col-md-4"><h3>Informazione</h3><p>Dettaglio</p></div><div class="col-md-4"><h3>Informazione</h3><p>Dettaglio</p></div><div class="col-md-4"><h3>Informazione</h3><p>Dettaglio</p></div></div></div></section>`;
+
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            root.insertBefore(div.firstChild, footer);
+            initEditor();
+            toggleSidebar();
+        }
+
+        function saveAll() {
+            const clone = document.getElementById('editable-root').cloneNode(true);
+
+            // Fix counters so their animation targets update based on edited text
+            clone.querySelectorAll('.counter').forEach(el => {
+                const text = el.innerText.trim();
+                const isPlus = text.includes('+');
+                const num = parseInt(text.replace(/\D/g, '')) || 0;
+                el.setAttribute('data-target', num);
+                el.setAttribute('data-plus', isPlus ? 'true' : 'false');
+                el.innerText = text; // Keep text so it's not empty
+            });
+
+            // Cleanup admin bits
+            clone.querySelectorAll('.card-remover, .img-editor-tools, .admin-add-btn, .bg-editor-btn').forEach(el => el.remove());
+            clone.querySelectorAll('.img-editor-wrap').forEach(el => {
+                const img = el.querySelector('img');
+                el.parentNode.insertBefore(img, el);
+                el.remove();
+            });
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+            localStorage.setItem('saved_site_content_it_v2', clone.innerHTML);
+
+            const s = document.getElementById('save-status');
+            s.style.display = 'block';
+            setTimeout(() => s.style.display = 'none', 3000);
+        }
+
+        function openSettings() {
+            document.getElementById('nu').value = localStorage.getItem('admin_user');
+            document.getElementById('np').value = localStorage.getItem('admin_pass');
+            new bootstrap.Modal(document.getElementById('settingsModal')).show();
+        }
+
+        function updateAcc() {
+            localStorage.setItem('admin_user', document.getElementById('nu').value);
+            localStorage.setItem('admin_pass', document.getElementById('np').value);
+            alert("Aggiornato!");
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('np');
+            const toggleIcon = document.querySelector('#togglePasswordBtn i');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
+
+        function resetToDefault() {
+            if (confirm("Vuoi ripristinare i contenuti originali del sito? Perderai tutte le modifiche non salvate nei file.")) {
+                localStorage.removeItem('saved_site_content_it_v2');
+                window.location.reload();
+            }
+        }
+
+        function injectAddButtons() {
+            const prodSec = document.getElementById('prodotti');
+            if (prodSec) {
+                const row = prodSec.querySelector('.row');
+                if (row && !row.id) row.id = 'prod-grid';
+                if (!prodSec.querySelector('.admin-add-btn')) {
+                    const container = prodSec.querySelector('.container');
+                    if (container) container.insertAdjacentHTML('beforeend', `<div class="admin-add-btn mt-4" onclick="addCard('prod')"><i class="fas fa-plus me-2"></i> AGGIUNGI NUOVO PRODOTTO</div>`);
+                }
+            }
+            const servSec = document.getElementById('servizi');
+            if (servSec) {
+                const row = servSec.querySelector('.row');
+                if (row && !row.id) row.id = 'serv-grid';
+                if (!servSec.querySelector('.admin-add-btn')) {
+                    const container = servSec.querySelector('.container');
+                    if (container) container.insertAdjacentHTML('beforeend', `<div class="admin-add-btn mt-4" onclick="addCard('serv')"><i class="fas fa-plus me-2"></i> AGGIUNGI NUOVO SERVIZIO</div>`);
+                }
+            }
+        }
+
+        // Load saved content and start editor
+        const saved = localStorage.getItem('saved_site_content_it_v2');
+        if (saved) {
+            document.getElementById('editable-root').innerHTML = saved;
+        }
+        injectAddButtons();
+        initEditor();
+    </script>
+</body>
+
+</html>
