@@ -454,7 +454,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-users fa-2x text-primary me-3"></i>
                                     <div>
-                                        <h4 class="fw-bold mb-0 counter" data-target="10">10</h4>
+                                        <h4 class="fw-bold mb-0 counter" data-target="10">0</h4>
                                         <p class="small text-muted mb-0">Anni di Esperienza</p>
                                     </div>
                                 </div>
@@ -463,7 +463,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-smile fa-2x text-primary me-3"></i>
                                     <div>
-                                        <h4 class="fw-bold mb-0 counter" data-target="500">500</h4>
+                                        <h4 class="fw-bold mb-0 counter" data-target="500">0</h4>
                                         <p class="small text-muted mb-0">Clienti soddisfatti</p>
                                     </div>
                                 </div>
@@ -585,12 +585,20 @@
         </section>
 
         <!-- FAQ Section -->
-        <section class="py-5 bg-white">
-            <div class="container py-4">
-                <h2 class="section-title-centered fw-bold text-center mb-5">Domande Frequenti</h2>
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="accordion" id="faqAccordion">
+        <section id="faq" class="py-5 bg-light">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-right">
+                        <h2 class="section-title-left fw-bold mb-4">Domande Frequenti</h2>
+                        <p class="text-muted">Abbiamo raccolto le risposte alle domande più comuni per aiutarti a capire
+                            meglio i nostri servizi e le soluzioni per i tuoi serramenti.</p>
+                        <div class="mt-4">
+                            <img src="img/faq-illustration.png" alt="FAQ"
+                                class="img-fluid rounded shadow-sm d-none d-lg-block" style="max-height: 300px;">
+                        </div>
+                    </div>
+                    <div class="col-lg-7" data-aos="fade-left">
+                        <div class="accordion accordion-flush" id="faqAccordion">
                             <div class="accordion-item border-0 mb-3 shadow-sm">
                                 <h3 class="accordion-header">
                                     <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
@@ -601,8 +609,7 @@
                                 <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body text-muted">
                                         Sì! Offriamo sopralluogo e preventivo gratuito senza impegno a <strong>Tromello,
-                                            Pavia</strong> e in tutta la provincia di Pavia. Contattaci al <strong>320
-                                            1581689</strong>.
+                                            Pavia</strong> e in tutta la provincia di Pavia. Contattaci al <a href="tel:+393201581689" style="pointer-events: auto; color: inherit; font-weight: bold;">320 1581689</a>.
                                     </div>
                                 </div>
                             </div>
@@ -651,7 +658,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="admin-add-btn mt-4" onclick="addFAQ()"><i class="fas fa-plus me-2"></i> AGGIUNGI NUOVA DOMANDA</div>
+                        <div class="admin-add-btn mt-4" onclick="addFAQ()"><i class="fas fa-plus me-2"></i> AGGIUNGI
+                            NUOVA DOMANDA</div>
                     </div>
                 </div>
             </div>
@@ -813,12 +821,26 @@
                             </div>
                         </form>
                     </div>
-                    <div class="map-placeholder">
-                        <div class="placeholder-content">
-                            <i class="pin-icon">📍</i>
-                            <p>Mappa non disponibile</p>
+                    <!-- to remove later -->
+                    <div class="contact-wrapper">
+
+                        <div class="form-section">
+                            <h2>RICHIEDI IL TUO PREVENTIVO</h2>
+                            <p>Compila il modulo per ricevere una quotazione personalizzata.</p>
+                            <form>
+                                <button class="submit-btn">INVIA RICHIESTA</button>
+                            </form>
                         </div>
+
+                        <div class="map-placeholder">
+                            <div class="placeholder-content">
+                                <span>📍</span>
+                                <p>Mappa non disponibile</p>
+                            </div>
+                        </div>
+
                     </div>
+                    <!-- to remove later end here -->
                     <!-- <div class="col-lg-6">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2807.1342!2d8.8770241!3d45.2089617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47871c574e64fdff%3A0x73d45410a722a4be!2sVia%20Garlasco%2C%205%2C%2027020%20Tromello%20PV!5e0!3m2!1sit!2sit!4v1713810587784!5m2!1sit!2sit"
