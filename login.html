@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,26 +17,30 @@
             height: 100vh;
             margin: 0;
         }
+
         .login-card {
             background: white;
             padding: 2rem;
             border-radius: 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
             border-top: 5px solid var(--primary-color);
         }
+
         .login-card h2 {
             margin-bottom: 1.5rem;
             color: var(--primary-color);
             text-align: center;
         }
+
         .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(0, 91, 113, 0.25);
         }
     </style>
 </head>
+
 <body>
 
     <div class="login-card">
@@ -55,7 +60,8 @@
             </div>
         </form>
         <div class="text-center mt-4">
-            <a href="index.html" class="text-muted small text-decoration-none"><i class="fas fa-arrow-left me-1"></i> Torna al sito</a>
+            <a href="index.html" class="text-muted small text-decoration-none"><i class="fas fa-arrow-left me-1"></i>
+                Torna al sito</a>
         </div>
     </div>
 
@@ -66,7 +72,7 @@
             localStorage.setItem('admin_pass', '12345678');
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
@@ -81,4 +87,5 @@
         });
     </script>
 </body>
+
 </html>
