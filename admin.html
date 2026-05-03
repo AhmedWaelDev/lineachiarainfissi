@@ -954,7 +954,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Auth check
-        if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
+        // Secure hashing function
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Verify session token
+        async function checkLogin() {
+            const token = localStorage.getItem('isLoggedIn');
+            const user = localStorage.getItem('admin_user');
+            const pass = localStorage.getItem('admin_pass');
+            if (!token || !user || !pass) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const expectedToken = await sha256(user + pass + "lineachiarasalt");
+            if (token !== expectedToken) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkLogin();
 
         let editing = true;
 
@@ -1188,15 +1210,25 @@
 
         function openSettings() {
             document.getElementById('nu').value = localStorage.getItem('admin_user');
-            document.getElementById('np').value = localStorage.getItem('admin_pass');
+            document.getElementById('np').value = ""; // Don't show hashed password
+            document.getElementById('stats-years-input').value = localStorage.getItem('site_years_exp') || '10';
             document.getElementById('stats-years-input').value = localStorage.getItem('site_years_exp') || '10';
             document.getElementById('stats-clients-input').value = localStorage.getItem('site_satisfied_clients') || '3000';
             new bootstrap.Modal(document.getElementById('settingsModal')).show();
         }
 
-        function updateAcc() {
-            localStorage.setItem('admin_user', document.getElementById('nu').value);
-            localStorage.setItem('admin_pass', document.getElementById('np').value);
+        async function updateAcc() {
+            const newUser = document.getElementById('nu').value;
+            const newPass = document.getElementById('np').value;
+            
+            localStorage.setItem('admin_user', newUser);
+            if (newPass.trim() !== "") {
+                const hashedPass = await sha256(newPass);
+                localStorage.setItem('admin_pass', hashedPass);
+                // Update session token too so we stay logged in
+                const newToken = await sha256(newUser + hashedPass + "lineachiarasalt");
+                localStorage.setItem('isLoggedIn', newToken);
+            }
             
             // Save stats
             const years = document.getElementById('stats-years-input').value || '10';

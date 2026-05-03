@@ -66,20 +66,38 @@
     </div>
 
     <script>
-        // Initialize admin credentials if not set
-        if (!localStorage.getItem('admin_user')) {
-            localStorage.setItem('admin_user', 'admin');
-            localStorage.setItem('admin_pass', '12345678');
+        // Secure hashing function using Web Crypto API
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
+        // Initialize admin credentials securely on first load
+        async function initAuth() {
+            if (!localStorage.getItem('admin_user')) {
+                localStorage.setItem('admin_user', 'admin');
+                // Default password '12345678' hashed
+                localStorage.setItem('admin_pass', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f');
+            }
+        }
+        initAuth();
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
 
-            if (user === localStorage.getItem('admin_user') && pass === localStorage.getItem('admin_pass')) {
-                localStorage.setItem('isLoggedIn', 'true');
+            const hashedInput = await sha256(pass);
+            const storedUser = localStorage.getItem('admin_user');
+            const storedPass = localStorage.getItem('admin_pass');
+
+            if (user === storedUser && hashedInput === storedPass) {
+                // Store a session token derived from credentials to prevent easy bypass
+                const sessionToken = await sha256(user + storedPass + "lineachiarasalt");
+                localStorage.setItem('isLoggedIn', sessionToken);
                 window.location.href = 'admin.html';
             } else {
                 errorMsg.classList.remove('d-none');
