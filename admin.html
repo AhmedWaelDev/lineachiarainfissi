@@ -444,17 +444,19 @@
                     <div class="col-lg-7" data-aos="fade-left">
                         <h2 class="section-title-left fw-bold mb-4">Chi siamo</h2>
                         <p class="text-muted mb-4">
-                            Mi chiamo Mohamed e da anni mi occupo di serramenti PVC e legno, posa di porte blindate e
-                            interne, riparazione di zanzariere e persiane, tapparelle normali ed elettriche, tende da
-                            sole e inferriate in ferro. Il mio obiettivo è rendere la tua casa più sicura, confortevole
-                            ed esteticamente bella — con un servizio puntuale e prezzi onesti.
+                            <strong>Linea Chiara Infissi</strong>, operante nella <strong>Provincia di Pavia</strong>, è specializzata nella vendita e installazione di serramenti PVC e legno,
+                            porte blindate certificate, tapparelle manuali ed elettriche, zanzariere a rullo, tende da
+                            sole e inferriate in ferro. Con oltre <strong><span class="var-years">10</span> anni di esperienza</strong> e più di
+                            <strong><span class="var-clients">3000</span> clienti soddisfatti</strong> nella provincia di Pavia, offriamo preventivi
+                            gratuiti, posa certificata e documentazione completa per le detrazioni fiscali (DoP,
+                            marcatura CE, CAM).
                         </p>
                         <div class="row g-4 mb-4">
                             <div class="col-sm-6">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-users fa-2x text-primary me-3"></i>
                                     <div>
-                                        <h4 class="fw-bold mb-0 counter" data-target="10">0</h4>
+                                        <h4 class="fw-bold mb-0 counter var-years-counter" data-target="10">0</h4>
                                         <p class="small text-muted mb-0">Anni di Esperienza</p>
                                     </div>
                                 </div>
@@ -463,7 +465,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-smile fa-2x text-primary me-3"></i>
                                     <div>
-                                        <h4 class="fw-bold mb-0 counter" data-target="500">0</h4>
+                                        <h4 class="fw-bold mb-0 counter var-clients-counter" data-target="3000">0</h4>
                                         <p class="small text-muted mb-0">Clienti soddisfatti</p>
                                     </div>
                                 </div>
@@ -917,6 +919,20 @@
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="mb-3 border-bottom pb-3">
+                        <label class="form-label fw-bold">Statistiche Sito</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="small text-muted">Anni Esperienza</label>
+                                <input type="number" id="stats-years-input" class="form-control" placeholder="10">
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted">Clienti Soddisfatti</label>
+                                <input type="number" id="stats-clients-input" class="form-control" placeholder="3000">
+                            </div>
+                        </div>
+                    </div>
+                    <label class="form-label fw-bold">Credenziali Accesso</label>
                     <input type="text" id="nu" class="form-control mb-2" placeholder="Nuovo Nome Utente">
                     <div class="input-group">
                         <input type="password" id="np" class="form-control" placeholder="Nuova Password">
@@ -1173,14 +1189,44 @@
         function openSettings() {
             document.getElementById('nu').value = localStorage.getItem('admin_user');
             document.getElementById('np').value = localStorage.getItem('admin_pass');
+            document.getElementById('stats-years-input').value = localStorage.getItem('site_years_exp') || '10';
+            document.getElementById('stats-clients-input').value = localStorage.getItem('site_satisfied_clients') || '3000';
             new bootstrap.Modal(document.getElementById('settingsModal')).show();
         }
 
         function updateAcc() {
             localStorage.setItem('admin_user', document.getElementById('nu').value);
             localStorage.setItem('admin_pass', document.getElementById('np').value);
+            
+            // Save stats
+            const years = document.getElementById('stats-years-input').value || '10';
+            const clients = document.getElementById('stats-clients-input').value || '3000';
+            localStorage.setItem('site_years_exp', years);
+            localStorage.setItem('site_satisfied_clients', clients);
+            
+            applyStats();
             alert("Aggiornato!");
         }
+
+        function applyStats() {
+            const years = localStorage.getItem('site_years_exp') || '10';
+            const clients = localStorage.getItem('site_satisfied_clients') || '3000';
+            
+            document.querySelectorAll('.var-years').forEach(el => el.innerText = years);
+            document.querySelectorAll('.var-clients').forEach(el => el.innerText = clients);
+            
+            document.querySelectorAll('.var-years-counter').forEach(el => {
+                el.setAttribute('data-target', years);
+                el.innerText = years; // Show full value in admin
+            });
+            document.querySelectorAll('.var-clients-counter').forEach(el => {
+                el.setAttribute('data-target', clients);
+                el.innerText = clients; // Show full value in admin
+            });
+        }
+
+        // Initialize stats on load
+        window.addEventListener('DOMContentLoaded', applyStats);
 
         function togglePasswordVisibility() {
             const pwdInput = document.getElementById('np');
@@ -1233,6 +1279,7 @@
         }
         injectAddButtons();
         initEditor();
+        applyStats();
     </script>
 </body>
 

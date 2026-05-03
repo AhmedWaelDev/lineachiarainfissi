@@ -216,6 +216,7 @@
                     <div class="col-lg-5" data-aos="fade-right">
                         <img src="img/who-we-are.png"
                             alt="Mohamed installatore serramenti PVC legno Tromello Pavia 10 anni esperienza"
+                            id="who-we-are-img"
                             class="img-fluid shadow-sm" loading="lazy" width="800" height="600">
                     </div>
                     <div class="col-lg-7" data-aos="fade-left">
@@ -223,8 +224,8 @@
                         <p class="text-muted mb-4">
                             <strong>Linea Chiara Infissi</strong>, operante nella <strong>Provincia di Pavia</strong>, è specializzata nella vendita e installazione di serramenti PVC e legno,
                             porte blindate certificate, tapparelle manuali ed elettriche, zanzariere a rullo, tende da
-                            sole e inferriate in ferro. Con oltre <strong>10 anni di esperienza</strong> e più di
-                            <strong>500 clienti soddisfatti</strong> nella provincia di Pavia, offriamo preventivi
+                            sole e inferriate in ferro. Con oltre <strong><span class="var-years">10</span> anni di esperienza</strong> e più di
+                            <strong><span class="var-clients">3000</span> clienti soddisfatti</strong> nella provincia di Pavia, offriamo preventivi
                             gratuiti, posa certificata e documentazione completa per le detrazioni fiscali (DoP,
                             marcatura CE, CAM).
                         </p>
@@ -233,7 +234,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-users fa-2x text-primary me-3"></i>
                                     <div>
-                                        <h4 class="fw-bold mb-0 counter" data-target="10">0</h4>
+                                        <h4 class="fw-bold mb-0 counter var-years-counter" data-target="10">0</h4>
                                         <p class="small text-muted mb-0">Anni di Esperienza</p>
                                     </div>
                                 </div>
@@ -242,7 +243,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-smile fa-2x text-primary me-3"></i>
                                     <div>
-                                        <h4 class="fw-bold mb-0 counter" data-target="500">0</h4>
+                                        <h4 class="fw-bold mb-0 counter var-clients-counter" data-target="3000">0</h4>
                                         <p class="small text-muted mb-0">Clienti soddisfatti</p>
                                     </div>
                                 </div>
@@ -820,6 +821,29 @@
         if (savedContent && !window.location.pathname.includes('admin.html')) {
             document.getElementById('live-site-content').innerHTML = savedContent;
         }
+
+        function applyStats() {
+            const years = localStorage.getItem('site_years_exp') || '10';
+            const clients = localStorage.getItem('site_satisfied_clients') || '3000';
+
+            document.querySelectorAll('.var-years').forEach(el => el.innerText = years);
+            document.querySelectorAll('.var-clients').forEach(el => el.innerText = clients);
+
+            document.querySelectorAll('.var-years-counter').forEach(el => {
+                el.setAttribute('data-target', years);
+            });
+            document.querySelectorAll('.var-clients-counter').forEach(el => {
+                el.setAttribute('data-target', clients);
+            });
+
+            const whoImg = document.getElementById('who-we-are-img');
+            if (whoImg) {
+                whoImg.alt = `Mohamed installatore serramenti PVC legno Tromello Pavia ${years} anni esperienza`;
+            }
+        }
+
+        // Apply stats before AOS and Counter init
+        applyStats();
 
         AOS.init({
             duration: 1000,
