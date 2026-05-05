@@ -242,24 +242,24 @@
     <div class="admin-toolbar">
         <div class="d-flex align-items-center">
             <span class="admin-logo-text h4 mb-0 me-4">ADMIN</span>
-            <button class="btn btn-sm btn-info fw-bold me-2 px-3" onclick="toggleEditMode()" id="modeBtn">
+            <button class="btn btn-sm btn-info fw-bold me-2 px-3" onclick="toggleEditMode()" id="modeBtn" aria-label="Cambia modalità anteprima">
                 <i class="fas fa-eye me-2"></i> <span>ANTEPRIMA</span>
             </button>
-            <button class="btn btn-sm btn-outline-light me-2" onclick="toggleSidebar()">
+            <button class="btn btn-sm btn-outline-light me-2" onclick="toggleSidebar()" aria-label="Apri libreria sezioni">
                 <i class="fas fa-plus-circle me-2"></i> <span>AGGIUNGI</span>
             </button>
         </div>
         <div class="d-flex align-items-center">
-            <button class="btn btn-sm btn-success fw-bold me-2 px-3" onclick="saveAll()">
+            <button class="btn btn-sm btn-success fw-bold me-2 px-3" onclick="saveAll()" aria-label="Salva tutte le modifiche">
                 <i class="fas fa-save me-2"></i> <span>SALVA</span>
             </button>
-            <button class="btn btn-sm btn-outline-info me-2" onclick="openSettings()" title="Impostazioni">
+            <button class="btn btn-sm btn-outline-info me-2" onclick="openSettings()" title="Impostazioni" aria-label="Impostazioni account e statistiche">
                 <i class="fas fa-cog"></i>
             </button>
-            <button class="btn btn-sm btn-outline-warning me-2" data-bs-toggle="modal" data-bs-target="#resetModal" title="Ripristina Originale">
+            <button class="btn btn-sm btn-outline-warning me-2" data-bs-toggle="modal" data-bs-target="#resetModal" title="Ripristina Originale" aria-label="Ripristina contenuti originali">
                 <i class="fas fa-undo"></i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="logout()" title="Esci">
+            <button class="btn btn-sm btn-danger" onclick="logout()" title="Esci" aria-label="Disconnetti">
                 <i class="fas fa-sign-out-alt"></i>
             </button>
         </div>
@@ -269,7 +269,7 @@
     <div class="section-sidebar" id="sidebar">
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
             <h5 class="fw-bold mb-0">Libreria</h5>
-            <button class="btn-close" onclick="toggleSidebar()"></button>
+            <button class="btn-close" onclick="toggleSidebar()" aria-label="Chiudi sidebar"></button>
         </div>
         <div class="list-group list-group-flush">
             <button class="list-group-item list-group-item-action py-3" onclick="injectSection('hero')">
@@ -294,7 +294,7 @@
                     <a class="navbar-brand d-flex align-items-center" href="#home">
                         <span class="fw-bold h4 mb-0 text-primary">LINEA CHIARA INFISSI</span>
                     </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Attiva menu di navigazione">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
@@ -331,21 +331,21 @@
         </header>
 
         <!-- Hero Section -->
-        <section id="home" class="hero-section">
+        <section id="home" class="hero-section" role="region" aria-roledescription="carousel" aria-label="Galleria immagini principale">
             <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
                 <!-- Custom Indicators -->
                 <div class="carousel-custom-controls">
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" class="control-btn">
-                        <i class="fas fa-chevron-left"></i>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" class="control-btn" aria-label="Slide precedente">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
                     </button>
                     <div class="carousel-indicators-custom">
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0"
-                            class="active"></button>
-                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+                            class="active" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                     </div>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide="next" class="control-btn">
-                        <i class="fas fa-chevron-right"></i>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide="next" class="control-btn" aria-label="Prossima slide">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
                     </button>
                 </div>
 
@@ -845,12 +845,12 @@
                             <span>mohamedonly112@gmail.com</span>
                         </div>
                         <div class="footer-social">
-                            <a href="https://wa.me/393201581689" class="social-icon-box" target="_blank"><i
+                            <a href="https://wa.me/393201581689" class="social-icon-box" target="_blank" aria-label="Contattaci su WhatsApp"><i
                                     class="fab fa-whatsapp"></i></a>
-                            <a href="#" class="social-icon-box"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon-box"><i class="fab fa-youtube"></i></a>
-                            <a href="#" class="social-icon-box"><i class="fab fa-pinterest-p"></i></a>
-                            <a href="#" class="social-icon-box"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon-box" aria-label="Seguici su Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon-box" aria-label="Seguici su YouTube"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="social-icon-box" aria-label="Seguici su Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                            <a href="#" class="social-icon-box" aria-label="Seguici su Instagram"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
                 </div>
@@ -866,7 +866,7 @@
                                     Admin</a></p>
                         </div>
                         <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-                            <a href="#" class="back-to-top d-inline-flex ms-auto">
+                            <a href="#" class="back-to-top d-inline-flex ms-auto" aria-label="Torna su">
                                 <i class="fas fa-chevron-up"></i>
                             </a>
                         </div>
@@ -876,7 +876,7 @@
         </footer>
 
         <!-- WhatsApp Floating Button -->
-        <a href="https://wa.me/393201581689" class="whatsapp-float shadow" target="_blank">
+        <a href="https://wa.me/393201581689" class="whatsapp-float shadow" target="_blank" aria-label="Chat su WhatsApp">
             <i class="fab fa-whatsapp"></i>
         </a>
 
@@ -889,7 +889,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5>Impostazioni Account</h5><button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
+                        data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3 border-bottom pb-3">
@@ -910,7 +910,7 @@
                     <div class="input-group">
                         <input type="password" id="np" class="form-control" placeholder="Nuova Password">
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility()"
-                            id="togglePasswordBtn">
+                            id="togglePasswordBtn" aria-label="Mostra/Nascondi password">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
@@ -1010,9 +1010,9 @@
                     const tools = document.createElement('div');
                     tools.className = 'img-editor-tools';
                     tools.innerHTML = `
-                        <button class="btn btn-xs btn-info text-white" onclick="changeImageURL(this)" title="URL"><i class="fas fa-link"></i></button>
-                        <button class="btn btn-xs btn-primary" onclick="uploadImage(this)" title="Carica"><i class="fas fa-upload"></i></button>
-                        <button class="btn btn-xs btn-danger" onclick="removeImage(this)" title="Elimina"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-xs btn-info text-white" onclick="changeImageURL(this)" title="URL" aria-label="Modifica URL immagine"><i class="fas fa-link"></i></button>
+                        <button class="btn btn-xs btn-primary" onclick="uploadImage(this)" title="Carica" aria-label="Carica nuova immagine"><i class="fas fa-upload"></i></button>
+                        <button class="btn btn-xs btn-danger" onclick="removeImage(this)" title="Elimina" aria-label="Elimina immagine"><i class="fas fa-trash"></i></button>
                     `;
                     wrap.appendChild(tools);
                 }
@@ -1303,6 +1303,23 @@
         }
         injectAddButtons();
         initEditor();
+        // Sync Custom Carousel Indicators
+        const heroCarousel = document.getElementById('heroCarousel');
+        const customIndicators = document.querySelectorAll('.carousel-indicators-custom button');
+
+        if (heroCarousel && customIndicators.length > 0) {
+            heroCarousel.addEventListener('slide.bs.carousel', event => {
+                const index = event.to;
+                customIndicators.forEach((btn, i) => {
+                    if (i === index) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            });
+        }
+
         applyStats();
     </script>
 </body>
